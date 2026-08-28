@@ -1,0 +1,88 @@
+/* Panel frame ------------------------------------------------------------ */
+
+.panel {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100%;
+  background: var(--color-surface);
+}
+
+.panel__body {
+  min-height: 0;
+  overflow: auto;
+}
+
+.panel__foot {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-3);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-faint);
+}
+
+.panel__code {
+  color: var(--color-accent-dim);
+}
+
+.panel__detail {
+  margin-left: auto;
+}
+
+/* Panel tab -------------------------------------------------------------- */
+
+.panel-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 100%;
+  padding: 0 var(--space-2) 0 var(--space-3);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-dim);
+  white-space: nowrap;
+}
+
+.dv-active-tab .panel-tab {
+  color: var(--color-text);
+}
+
+.panel-tab__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-live);
+  box-shadow: 0 0 5px var(--color-live);
+  animation: panel-live-blink 2.4s steps(1, end) infinite;
+}
+
+@keyframes panel-live-blink {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  71%,
+  100% {
+    opacity: 0.2;
+  }
+}
+
+.panel-tab__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panel-tab__close {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  font-size: 9px;
+  color: var(--color-text-faint);
+  transition: color var(--duration-fast) var(--ease-out-expo);
+}
+
+.panel-tab__close:hover {
+  color: var(--color-danger);
+}

@@ -4,22 +4,15 @@
   height: 100%;
 }
 
+/*
+ * The panel host fills this area and paints its own surfaces. The faint grid only
+ * shows through the gaps between groups and behind an empty workspace.
+ */
 .workspace {
   position: relative;
-  display: grid;
-  place-items: center;
   overflow: hidden;
   background:
     linear-gradient(90deg, var(--color-line) 1px, transparent 1px) 0 0 / 96px 96px,
     linear-gradient(180deg, var(--color-line) 1px, transparent 1px) 0 0 / 96px 96px,
     var(--color-void);
-}
-
-/* Fade the grid out toward the edges so it reads as depth, not wallpaper. */
-.workspace::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, transparent 20%, var(--color-void) 78%);
-  pointer-events: none;
 }

@@ -1,0 +1,45 @@
+/* Shared up/down treatment. Every panel that shows a direction uses these. */
+
+.mkt-up {
+  color: var(--color-up);
+}
+
+.mkt-down {
+  color: var(--color-down);
+}
+
+.mkt-flat {
+  color: var(--color-text-faint);
+}
+
+.mkt-cell {
+  font-variant-numeric: tabular-nums;
+}
+
+.mkt-cell--up {
+  color: var(--color-up);
+  background: var(--color-up-tint);
+  box-shadow: inset 1px 0 0 var(--color-up-edge);
+}
+
+.mkt-cell--down {
+  color: var(--color-down);
+  background: var(--color-down-tint);
+  box-shadow: inset 1px 0 0 var(--color-down-edge);
+}
+
+.mkt-cell--flat {
+  color: var(--color-text-dim);
+}
+
+.mkt-edge--up {
+  border-left-color: var(--color-up-edge);
+}
+
+.mkt-edge--down {
+  border-left-color: var(--color-down-edge);
+}
+
+.mkt-edge--flat {
+  border-left-color: var(--color-line);
+}
