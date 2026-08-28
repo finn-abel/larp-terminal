@@ -1,0 +1,103 @@
+.chart {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 160px;
+}
+
+.chart__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-line);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+}
+
+.chart__symbol {
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-accent);
+}
+
+.chart__last {
+  font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart__change {
+  font-variant-numeric: tabular-nums;
+}
+
+.chart__regime {
+  margin-left: auto;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid currentColor;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-faint);
+}
+
+.chart__regime--rally {
+  color: var(--color-up);
+}
+
+.chart__regime--crash {
+  color: var(--color-down);
+}
+
+.chart__regime--high_vol {
+  color: var(--color-accent);
+}
+
+/* The chart writes into this box; it must never drive the panel's height. */
+.chart__canvas {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chart__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-1) var(--space-3);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+}
+
+.chart__control {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.chart__control-label {
+  color: var(--color-text-faint);
+}
+
+.chart__control select,
+.chart__toggle {
+  padding: 1px var(--space-2);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-line-strong);
+  border-radius: 0;
+  font: inherit;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text);
+  cursor: pointer;
+  appearance: none;
+}
+
+.chart__control select:hover,
+.chart__toggle:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.chart__toggle {
+  margin-left: auto;
+  color: var(--color-text-dim);
+}

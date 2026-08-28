@@ -1,13 +1,20 @@
 import type { ComponentType } from 'react'
 import { MatrixPanel, type MatrixConfig } from '@renderer/panels/MatrixPanel/MatrixPanel'
 import { QuotePanel, type QuoteConfig } from '@renderer/panels/QuotePanel/QuotePanel'
+import { ChartPanel, type ChartConfig } from '@renderer/panels/ChartPanel/ChartPanel'
 import { DEFAULT_SYMBOLS } from '@renderer/engine'
+
+export interface PanelProps<TConfig> {
+  readonly config: TConfig
+  /** Persists a new config on the panel; the workspace serializes it with the layout. */
+  readonly setConfig: (next: TConfig) => void
+}
 
 export interface PanelDefinition<TConfig> {
   /** Stable key used in serialized workspaces. Never rename one in place. */
   readonly type: string
   readonly displayName: string
-  readonly component: ComponentType<{ config: TConfig }>
+  readonly component: ComponentType<PanelProps<TConfig>>
   readonly defaultConfig: TConfig
   /** Optional suffix for the tab title, e.g. the configured symbol. */
   readonly describe?: (config: TConfig) => string
@@ -31,6 +38,13 @@ export const PANEL_DEFINITIONS: readonly PanelDefinition<unknown>[] = [
     component: MatrixPanel,
     defaultConfig: { sectors: [], showBreadth: true },
     describe: (config) => (config.sectors.length === 0 ? 'ALL' : config.sectors.join('/'))
+  }),
+  definePanel<ChartConfig>({
+    type: 'chart',
+    displayName: 'CHART',
+    component: ChartPanel,
+    defaultConfig: { symbolId: firstSymbol!.id, intervalSeconds: 2, style: 'candles' },
+    describe: (config) => `${config.symbolId.toUpperCase()} ${config.intervalSeconds}S`
   }),
   definePanel<QuoteConfig>({
     type: 'quote',

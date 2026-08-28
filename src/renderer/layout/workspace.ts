@@ -86,23 +86,24 @@ export function addPanel(
 }
 
 /**
- * The layout a fresh install opens with: the matrix on the left, a stack of quotes on
- * the right, and two of them tabbed together so the docking is obvious immediately.
+ * The layout a fresh install opens with: the matrix on the left, the chart filling the
+ * right, and quotes stacked beneath it — two of them tabbed together so the docking is
+ * obvious immediately.
  */
 export function buildDefaultLayout(api: DockviewApi): void {
   const matrix = addPanel(api, 'matrix')
   if (!matrix) return
 
-  const lead = addPanel(api, 'quote', {
-    config: { symbolId: 'qvnx' },
+  const chart = addPanel(api, 'chart', {
+    config: { symbolId: 'tesr', intervalSeconds: 2, style: 'candles' },
     referencePanel: matrix,
     direction: 'right'
   })
-  if (!lead) return
+  if (!chart) return
 
   const lower = addPanel(api, 'quote', {
-    config: { symbolId: 'tesr' },
-    referencePanel: lead,
+    config: { symbolId: 'qvnx' },
+    referencePanel: chart,
     direction: 'below'
   })
   if (!lower) return

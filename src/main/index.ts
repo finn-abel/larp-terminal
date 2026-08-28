@@ -29,6 +29,12 @@ function createWindow(): BrowserWindow {
 
   window.once('ready-to-show', () => window.show())
 
+  // A renderer crash otherwise just makes the window vanish with no explanation.
+  window.webContents.on('render-process-gone', (_event, details) => {
+    console.error('[main] renderer gone:', details.reason, 'exitCode', details.exitCode)
+  })
+  window.on('unresponsive', () => console.error('[main] renderer unresponsive'))
+
   window.webContents.setWindowOpenHandler(({ url }) => {
     void shell.openExternal(url)
     return { action: 'deny' }

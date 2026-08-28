@@ -1,8 +1,11 @@
 import type { Rng } from './rng'
 import type { MarketPulse, RegimeProfile, StreamDefinition, StreamState } from './types'
 
-/** Points retained per stream — enough for a sparkline or a chart warm-up. */
-export const HISTORY_LIMIT = 240
+/**
+ * Points retained per stream: 900 ticks is 75s of simulated time at 12hz, enough for a
+ * chart panel to open with a populated window instead of two lonely candles.
+ */
+export const HISTORY_LIMIT = 900
 
 /**
  * Restoring force toward the base price, expressed as extra drift.
