@@ -16,8 +16,13 @@
   /* Semantics */
   --color-accent: #ffae00;
   --color-accent-dim: #7a5400;
-  --color-up: #24d07a;
-  --color-down: #ff4d47;
+  --color-up: #2ee88a;
+  --color-down: #ff5b55;
+  /* Tints for filled cells — enough to read as a block, never enough to fight the text. */
+  --color-up-tint: rgb(46 232 138 / 0.12);
+  --color-down-tint: rgb(255 91 85 / 0.12);
+  --color-up-edge: rgb(46 232 138 / 0.5);
+  --color-down-edge: rgb(255 91 85 / 0.5);
   --color-live: #24d07a;
   --color-danger: #ff4d47;
 
