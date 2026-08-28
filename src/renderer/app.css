@@ -1,0 +1,65 @@
+.app {
+  display: grid;
+  grid-template-rows: var(--titlebar-height) minmax(0, 1fr);
+  height: 100%;
+}
+
+.workspace {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, var(--color-line) 1px, transparent 1px) 0 0 / 96px 96px,
+    linear-gradient(180deg, var(--color-line) 1px, transparent 1px) 0 0 / 96px 96px,
+    var(--color-void);
+}
+
+/* Fade the grid out toward the edges so it reads as depth, not wallpaper. */
+.workspace::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 20%, var(--color-void) 78%);
+  pointer-events: none;
+}
+
+.boot {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-left: 1px solid var(--color-accent);
+}
+
+.boot__heading {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-label);
+  font-weight: 400;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-accent);
+}
+
+.boot__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.boot__line {
+  font-size: var(--text-body);
+  color: var(--color-text-dim);
+  white-space: pre;
+}
+
+.boot__note {
+  margin: var(--space-5) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-faint);
+}
