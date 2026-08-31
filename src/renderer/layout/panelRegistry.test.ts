@@ -10,7 +10,8 @@ describe('panel registry', () => {
   it('gives every panel a display name, component and default config', () => {
     for (const definition of PANEL_DEFINITIONS) {
       expect(definition.displayName).toBeTruthy()
-      expect(definition.component).toBeTypeOf('function')
+      // Lazy components are objects, not functions.
+      expect(definition.component).toBeDefined()
       expect(definition.defaultConfig).toBeDefined()
     }
   })

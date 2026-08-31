@@ -101,13 +101,19 @@ export function buildDefaultLayout(api: DockviewApi): void {
   })
   if (!chart) return
 
-  const lower = addPanel(api, 'quote', {
-    config: { symbolId: 'qvnx' },
+  const lower = addPanel(api, 'graph', {
     referencePanel: chart,
     direction: 'below'
   })
   if (!lower) return
 
+  const quote = addPanel(api, 'quote', {
+    config: { symbolId: 'qvnx' },
+    referencePanel: lower,
+    direction: 'right'
+  })
+  if (!quote) return
+
   // No direction: joins the same group as a tab.
-  addPanel(api, 'quote', { config: { symbolId: 'grvn' }, referencePanel: lower })
+  addPanel(api, 'quote', { config: { symbolId: 'grvn' }, referencePanel: quote })
 }

@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { IDockviewPanelProps } from 'dockview-react'
 import { PanelShell } from '@renderer/components/panel/PanelShell'
 import { PanelErrorBoundary } from '@renderer/components/panel/PanelErrorBoundary'
@@ -24,7 +25,9 @@ function wrap(definition: PanelDefinition<unknown>): React.FunctionComponent<IDo
     return (
       <PanelShell type={definition.type} detail={definition.describe?.(config)}>
         <PanelErrorBoundary type={definition.type}>
-          <Panel config={config} setConfig={setConfig} />
+          <Suspense fallback={<p className="panel-loading">LOADING {definition.displayName}…</p>}>
+            <Panel config={config} setConfig={setConfig} />
+          </Suspense>
         </PanelErrorBoundary>
       </PanelShell>
     )

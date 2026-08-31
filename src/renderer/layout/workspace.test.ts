@@ -128,11 +128,17 @@ describe('addPanel', () => {
 })
 
 describe('default layout', () => {
-  it('opens a matrix, a chart and two quotes, one of them tabbed', () => {
+  it('opens a matrix, a chart, a graph and two quotes, one of them tabbed', () => {
     const { api, added } = stubApi()
     buildDefaultLayout(api)
 
-    expect(added.map((panel) => panel.component)).toEqual(['matrix', 'chart', 'quote', 'quote'])
-    expect(added[3]!.position).toEqual({ referencePanel: added[2]!.id })
+    expect(added.map((panel) => panel.component)).toEqual([
+      'matrix',
+      'chart',
+      'graph',
+      'quote',
+      'quote'
+    ])
+    expect(added[4]!.position).toEqual({ referencePanel: added[3]!.id })
   })
 })

@@ -1,36 +1,30 @@
-.chart {
+.graph {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   height: 100%;
   min-height: 160px;
 }
 
-.chart__head {
+.graph__head {
   display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
+  align-items: center;
+  gap: var(--space-4);
   padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--color-line);
   font-size: var(--text-micro);
   letter-spacing: var(--tracking-wide);
 }
 
-.chart__symbol {
-  font-size: var(--text-label);
+.graph__title {
   letter-spacing: var(--tracking-label);
   color: var(--color-accent);
 }
 
-.chart__last {
-  font-size: var(--text-body);
-  font-variant-numeric: tabular-nums;
+.graph__meta {
+  color: var(--color-text-faint);
 }
 
-.chart__change {
-  font-variant-numeric: tabular-nums;
-}
-
-.chart__regime {
+.graph__regime {
   margin-left: auto;
   padding: var(--space-1) var(--space-2);
   border: 1px solid currentColor;
@@ -38,21 +32,22 @@
   color: var(--color-text-faint);
 }
 
-.chart__regime--rally {
+.graph__regime--rally {
   color: var(--color-up);
 }
 
-.chart__regime--crash {
+.graph__regime--crash {
   color: var(--color-down);
 }
 
-.chart__regime--high_vol {
+.graph__regime--high_vol {
   color: var(--color-accent);
 }
 
-/* The chart writes into this box; it must never drive the panel's height. */
-.chart__canvas {
+/* The canvas sits on the void so the glow reads; it must never size the panel. */
+.graph__canvas {
   position: relative;
   min-height: 0;
   overflow: hidden;
+  background: var(--color-void);
 }

@@ -26,6 +26,15 @@
   --color-live: #24d07a;
   --color-danger: #ff4d47;
 
+  /* Cluster palette for the graph: the accent family plus two cool neutrals so
+     clusters stay distinguishable without inventing a second brand colour. */
+  --color-cluster-1: #ffae00;
+  --color-cluster-2: #2ee88a;
+  --color-cluster-3: #ff5b55;
+  --color-cluster-4: #57b6d9;
+  --color-cluster-5: #b98cff;
+  --color-cluster-6: #8fa2b5;
+
   /* Type — monospace everywhere, small and tight */
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular,
     Menlo, Consolas, monospace;

@@ -162,9 +162,9 @@ export function ChartPanel({ config, setConfig }: PanelProps<ChartConfig>): Reac
 
       <div className="chart__canvas" ref={containerRef} />
 
-      <div className="chart__controls">
-        <label className="chart__control">
-          <span className="chart__control-label">SYM</span>
+      <div className="panel-controls">
+        <label className="panel-control">
+          <span className="panel-control__label">SYM</span>
           <select
             value={config.symbolId}
             onChange={(event) => setConfig({ ...config, symbolId: event.target.value })}
@@ -177,8 +177,8 @@ export function ChartPanel({ config, setConfig }: PanelProps<ChartConfig>): Reac
           </select>
         </label>
 
-        <label className="chart__control">
-          <span className="chart__control-label">INT</span>
+        <label className="panel-control">
+          <span className="panel-control__label">INT</span>
           <select
             value={config.intervalSeconds}
             onChange={(event) =>
@@ -195,7 +195,7 @@ export function ChartPanel({ config, setConfig }: PanelProps<ChartConfig>): Reac
 
         <button
           type="button"
-          className="chart__toggle"
+          className="panel-button panel-button--end"
           onClick={() =>
             setConfig({ ...config, style: config.style === 'candles' ? 'line' : 'candles' })
           }

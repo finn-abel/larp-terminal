@@ -1,7 +1,8 @@
-import type { ComponentType } from 'react'
-import { MatrixPanel, type MatrixConfig } from '@renderer/panels/MatrixPanel/MatrixPanel'
-import { QuotePanel, type QuoteConfig } from '@renderer/panels/QuotePanel/QuotePanel'
-import { ChartPanel, type ChartConfig } from '@renderer/panels/ChartPanel/ChartPanel'
+import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
+import type { MatrixConfig } from '@renderer/panels/MatrixPanel/MatrixPanel'
+import type { QuoteConfig } from '@renderer/panels/QuotePanel/QuotePanel'
+import type { ChartConfig } from '@renderer/panels/ChartPanel/ChartPanel'
+import type { GraphConfig } from '@renderer/panels/GraphPanel/GraphPanel'
 import { DEFAULT_SYMBOLS } from '@renderer/engine'
 
 export interface PanelProps<TConfig> {
@@ -10,11 +11,18 @@ export interface PanelProps<TConfig> {
   readonly setConfig: (next: TConfig) => void
 }
 
+/**
+ * Panels load on demand. Charting and force-graph libraries are heavy, and a workspace
+ * only pays for the panels it actually opens — which also keeps this registry importable
+ * from a plain Node context, where those libraries touch `window` at module scope.
+ */
+export type PanelComponent<TConfig> = LazyExoticComponent<ComponentType<PanelProps<TConfig>>>
+
 export interface PanelDefinition<TConfig> {
   /** Stable key used in serialized workspaces. Never rename one in place. */
   readonly type: string
   readonly displayName: string
-  readonly component: ComponentType<PanelProps<TConfig>>
+  readonly component: PanelComponent<TConfig>
   readonly defaultConfig: TConfig
   /** Optional suffix for the tab title, e.g. the configured symbol. */
   readonly describe?: (config: TConfig) => string
@@ -31,6 +39,19 @@ function definePanel<TConfig>(definition: PanelDefinition<TConfig>): PanelDefini
 
 const [firstSymbol] = DEFAULT_SYMBOLS
 
+const MatrixPanel = lazy(async () => ({
+  default: (await import('@renderer/panels/MatrixPanel/MatrixPanel')).MatrixPanel
+}))
+const ChartPanel = lazy(async () => ({
+  default: (await import('@renderer/panels/ChartPanel/ChartPanel')).ChartPanel
+}))
+const GraphPanel = lazy(async () => ({
+  default: (await import('@renderer/panels/GraphPanel/GraphPanel')).GraphPanel
+}))
+const QuotePanel = lazy(async () => ({
+  default: (await import('@renderer/panels/QuotePanel/QuotePanel')).QuotePanel
+}))
+
 export const PANEL_DEFINITIONS: readonly PanelDefinition<unknown>[] = [
   definePanel<MatrixConfig>({
     type: 'matrix',
@@ -45,6 +66,13 @@ export const PANEL_DEFINITIONS: readonly PanelDefinition<unknown>[] = [
     component: ChartPanel,
     defaultConfig: { symbolId: firstSymbol!.id, intervalSeconds: 2, style: 'candles' },
     describe: (config) => `${config.symbolId.toUpperCase()} ${config.intervalSeconds}S`
+  }),
+  definePanel<GraphConfig>({
+    type: 'graph',
+    displayName: 'GRAPH',
+    component: GraphPanel,
+    defaultConfig: { nodeCount: 120, reassignSeconds: 2, glow: true, rings: false },
+    describe: (config) => `${config.nodeCount}N`
   }),
   definePanel<QuoteConfig>({
     type: 'quote',
