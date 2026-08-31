@@ -1,0 +1,114 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: var(--color-void);
+  transition: opacity 400ms var(--ease-out-expo);
+}
+
+.splash--leaving {
+  opacity: 0;
+}
+
+.splash__panel {
+  width: min(460px, 80vw);
+  padding: var(--space-6);
+  border: 1px solid var(--color-line);
+  border-left: 1px solid var(--color-accent);
+  background: var(--color-surface);
+}
+
+.splash__brand {
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text);
+}
+
+.splash__sep {
+  color: var(--color-accent);
+}
+
+.splash__steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-height: 96px;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-dim);
+}
+
+.splash__step {
+  display: flex;
+  gap: var(--space-3);
+  padding: 1px 0;
+  animation: splash-line 220ms var(--ease-out-expo);
+}
+
+@keyframes splash-line {
+  from {
+    opacity: 0;
+    transform: translate3d(-4px, 0, 0);
+  }
+}
+
+.splash__marker {
+  color: var(--color-up);
+}
+
+.splash__bar {
+  height: 2px;
+  margin: var(--space-4) 0 var(--space-3);
+  background: var(--color-line);
+}
+
+.splash__bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent);
+  transition: width 320ms var(--ease-out-expo);
+}
+
+.splash__status {
+  margin: 0;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.splash__status--granted {
+  color: var(--color-up);
+  animation: splash-granted 620ms steps(1, end) 3;
+}
+
+@keyframes splash-granted {
+  0%,
+  60% {
+    opacity: 1;
+  }
+  61%,
+  100% {
+    opacity: 0.35;
+  }
+}
+
+.splash__disclaimer {
+  margin: var(--space-5) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash__step,
+  .splash__status--granted {
+    animation: none;
+  }
+}

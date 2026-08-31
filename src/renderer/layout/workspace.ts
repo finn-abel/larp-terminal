@@ -1,44 +1,51 @@
 import type { DockviewApi, SerializedDockview } from 'dockview-react'
+import type { WorkspaceSnapshot } from '@shared/ipc'
 import { getPanelDefinition, panelTitle } from './panelRegistry'
 import type { PanelParams } from './panelComponents'
 
-const STORAGE_KEY = 'larp.workspace'
-const VERSION = 1
+export const DEFAULT_WORKSPACE = 'default'
 
-interface StoredWorkspace {
-  readonly version: number
-  readonly layout: SerializedDockview
-}
-
-/** Step 7 moves this to a JSON file in the main process; localStorage is fine for now. */
-export function saveWorkspace(layout: SerializedDockview): void {
+/**
+ * Workspaces live in a JSON file owned by the main process (Step 7); the renderer only
+ * talks to it over IPC. Every call is wrapped, because a workspace we cannot read must
+ * degrade to the default layout rather than break launch.
+ */
+export async function readWorkspace(): Promise<WorkspaceSnapshot> {
   try {
-    const payload: StoredWorkspace = { version: VERSION, layout }
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+    return await window.larp.workspace.read()
   } catch (error) {
-    console.warn('[workspace] could not save layout', error)
+    console.warn('[workspace] could not read', error)
+    return { active: DEFAULT_WORKSPACE, names: [], layout: null }
   }
 }
 
-export function loadWorkspace(): SerializedDockview | null {
+export async function saveWorkspace(
+  name: string,
+  layout: SerializedDockview
+): Promise<WorkspaceSnapshot | null> {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-
-    const stored = JSON.parse(raw) as StoredWorkspace
-    if (stored.version !== VERSION || !stored.layout) return null
-    return stored.layout
+    return await window.larp.workspace.write(name, layout)
   } catch (error) {
-    console.warn('[workspace] could not read layout', error)
+    console.warn('[workspace] could not save', error)
     return null
   }
 }
 
-export function clearWorkspace(): void {
+export async function switchWorkspace(name: string): Promise<WorkspaceSnapshot | null> {
   try {
-    window.localStorage.removeItem(STORAGE_KEY)
-  } catch {
-    // A workspace we cannot clear is not worth failing a launch over.
+    return await window.larp.workspace.switch(name)
+  } catch (error) {
+    console.warn('[workspace] could not switch', error)
+    return null
+  }
+}
+
+export async function removeWorkspace(name: string): Promise<WorkspaceSnapshot | null> {
+  try {
+    return await window.larp.workspace.remove(name)
+  } catch (error) {
+    console.warn('[workspace] could not remove', error)
+    return null
   }
 }
 
@@ -134,8 +141,8 @@ export function buildDefaultLayout(api: DockviewApi): void {
   // Order matters: a group can only grow into space its siblings have given up, so the
   // matrix is shrunk first and the graph then claims what that released.
   setGroupHeight(api, tape, 46)
-  setGroupHeight(api, matrix, 260)
-  setGroupHeight(api, graph, 320)
+  setGroupHeight(api, matrix, 230)
+  setGroupHeight(api, graph, 420)
 
   // The graph shares a group with the heatmap and should be the tab on top.
   api.getPanel(graph)?.api.setActive()

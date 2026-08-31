@@ -143,3 +143,5 @@ vite.config.ts.timestamp-*
 .vite/
 
 BUILD.md
+# electron-builder output
+release/

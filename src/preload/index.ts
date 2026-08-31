@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { WindowChannel, type LarpApi } from '../shared/ipc'
+import { WindowChannel, WorkspaceChannel, type LarpApi } from '../shared/ipc'
 
 /**
  * The only bridge between renderer and main. Nothing from Node or Electron is
@@ -20,6 +20,12 @@ const api: LarpApi = {
         ipcRenderer.off(WindowChannel.maximizedChanged, handler)
       }
     }
+  },
+  workspace: {
+    read: () => ipcRenderer.invoke(WorkspaceChannel.read),
+    write: (name, layout) => ipcRenderer.invoke(WorkspaceChannel.write, name, layout),
+    switch: (name) => ipcRenderer.invoke(WorkspaceChannel.switch, name),
+    remove: (name) => ipcRenderer.invoke(WorkspaceChannel.remove, name)
   }
 }
 

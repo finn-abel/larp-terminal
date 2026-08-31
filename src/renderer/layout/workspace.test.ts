@@ -1,19 +1,41 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { DockviewApi, SerializedDockview } from 'dockview-react'
-import { addPanel, buildDefaultLayout, clearWorkspace, createPanelId, loadWorkspace, saveWorkspace } from './workspace'
+import type { WorkspaceSnapshot } from '@shared/ipc'
+import {
+  addPanel,
+  buildDefaultLayout,
+  createPanelId,
+  readWorkspace,
+  removeWorkspace,
+  saveWorkspace,
+  switchWorkspace
+} from './workspace'
 
 const LAYOUT = { grid: { root: {}, width: 1, height: 1, orientation: 'HORIZONTAL' } } as unknown as SerializedDockview
 
-function stubStorage(): Map<string, string> {
-  const store = new Map<string, string>()
+const SNAPSHOT: WorkspaceSnapshot = { active: 'default', names: ['default'], layout: LAYOUT }
+
+/** Stubs the preload bridge the renderer talks to. */
+function stubBridge(overrides: Partial<Record<keyof WorkspaceSnapshot | string, unknown>> = {}) {
+  const calls: Array<[string, unknown[]]> = []
+  const handler =
+    (name: string, result: unknown = SNAPSHOT) =>
+    (...args: unknown[]) => {
+      calls.push([name, args])
+      return result instanceof Error ? Promise.reject(result) : Promise.resolve(result)
+    }
+
   vi.stubGlobal('window', {
-    localStorage: {
-      getItem: (key: string) => store.get(key) ?? null,
-      setItem: (key: string, value: string) => void store.set(key, value),
-      removeItem: (key: string) => void store.delete(key)
+    larp: {
+      workspace: {
+        read: handler('read', overrides.read),
+        write: handler('write', overrides.write),
+        switch: handler('switch', overrides.switch),
+        remove: handler('remove', overrides.remove)
+      }
     }
   })
-  return store
+  return calls
 }
 
 /** Minimal DockviewApi stand-in that records what the workspace asked it to add. */
@@ -53,47 +75,43 @@ afterEach(() => {
 })
 
 describe('workspace storage', () => {
-  it('round-trips a layout', () => {
-    stubStorage()
-    saveWorkspace(LAYOUT)
-    expect(loadWorkspace()).toEqual(LAYOUT)
+  it('reads the active workspace over the bridge', async () => {
+    const calls = stubBridge()
+    await expect(readWorkspace()).resolves.toEqual(SNAPSHOT)
+    expect(calls[0]![0]).toBe('read')
   })
 
-  it('returns null when nothing is stored', () => {
-    stubStorage()
-    expect(loadWorkspace()).toBeNull()
-  })
-
-  it('rejects a layout written by a different version', () => {
-    const store = stubStorage()
-    store.set('larp.workspace', JSON.stringify({ version: 99, layout: LAYOUT }))
-    expect(loadWorkspace()).toBeNull()
-  })
-
-  it('survives malformed storage instead of throwing', () => {
-    const store = stubStorage()
-    store.set('larp.workspace', '{ not json')
-    expect(loadWorkspace()).toBeNull()
-  })
-
-  it('survives a storage that throws on write', () => {
-    vi.stubGlobal('window', {
-      localStorage: {
-        getItem: () => null,
-        setItem: () => {
-          throw new Error('quota exceeded')
-        },
-        removeItem: () => {}
-      }
+  it('falls back to an empty default when the bridge fails', async () => {
+    stubBridge({ read: new Error('no ipc') })
+    await expect(readWorkspace()).resolves.toEqual({
+      active: 'default',
+      names: [],
+      layout: null
     })
-    expect(() => saveWorkspace(LAYOUT)).not.toThrow()
   })
 
-  it('clears the stored layout', () => {
-    stubStorage()
-    saveWorkspace(LAYOUT)
-    clearWorkspace()
-    expect(loadWorkspace()).toBeNull()
+  it('saves a layout under a name', async () => {
+    const calls = stubBridge()
+    await saveWorkspace('trading', LAYOUT)
+    expect(calls[0]).toEqual(['write', ['trading', LAYOUT]])
+  })
+
+  it('returns null rather than throwing when a save fails', async () => {
+    stubBridge({ write: new Error('disk full') })
+    await expect(saveWorkspace('trading', LAYOUT)).resolves.toBeNull()
+  })
+
+  it('switches and removes by name', async () => {
+    const calls = stubBridge()
+    await switchWorkspace('night')
+    await removeWorkspace('night')
+    expect(calls.map(([name]) => name)).toEqual(['switch', 'remove'])
+  })
+
+  it('survives a failing switch or remove', async () => {
+    stubBridge({ switch: new Error('gone'), remove: new Error('gone') })
+    await expect(switchWorkspace('x')).resolves.toBeNull()
+    await expect(removeWorkspace('x')).resolves.toBeNull()
   })
 })
 
@@ -166,8 +184,8 @@ describe('default layout', () => {
 
     expect(sized).toEqual([
       { id: added[0]!.id, height: 46 },
-      { id: added[2]!.id, height: 260 },
-      { id: added[4]!.id, height: 320 }
+      { id: added[2]!.id, height: 230 },
+      { id: added[4]!.id, height: 420 }
     ])
   })
 

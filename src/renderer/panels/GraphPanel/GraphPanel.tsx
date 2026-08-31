@@ -34,6 +34,8 @@ const TRANSIT_MS = 7000
 const LAUNCH_SPEED = 0.55
 /** Beyond this distance from its cluster anchor, a node is treated as a stray. */
 const STRAY_DISTANCE = 95
+/** Framing ignores nodes further than this multiple of the ring radius from the centre. */
+const FRAME_OUTLIER_FACTOR = 1.9
 const FLARE_MS = 1100
 const NODE_COUNTS = [60, 120, 240, 400] as const
 const REASSIGN_CHOICES = [1, 2, 4] as const
@@ -79,15 +81,44 @@ export function GraphPanel({ config, setConfig }: PanelProps<GraphConfig>): Reac
     []
   )
 
+  const ringRadius = useMemo(() => 150 + Math.sqrt(graph.nodes.length) * 21, [graph.nodes.length])
+
+  /**
+   * Panels are rarely square. Stretching the anchor ring into an ellipse that matches
+   * the pane keeps the mesh filling the space instead of fitting a circle into the
+   * short axis and leaving the rest empty.
+   */
+  const ringScale = useMemo(() => {
+    if (size.width === 0 || size.height === 0) return { x: 1, y: 1 }
+    const aspect = Math.min(3, Math.max(1 / 3, size.width / size.height))
+    return { x: Math.sqrt(aspect), y: 1 / Math.sqrt(aspect) }
+  }, [size.width, size.height])
+
+  /**
+   * Frames the mesh, ignoring anything flung far outside the ring. A single stray node
+   * otherwise inflates the bounding box and shrinks the whole graph to a speck.
+   */
+  const frame = useCallback(
+    (duration: number) => {
+      const limit = ringRadius * FRAME_OUTLIER_FACTOR
+      graphRef.current?.zoomToFit(duration, 28, (node) =>
+        Math.hypot((node.x ?? 0) / ringScale.x, (node.y ?? 0) / ringScale.y) <= limit
+      )
+    },
+    [ringRadius, ringScale]
+  )
+
   /** Where a cluster lives: a slowly turning ring, one seat per group. */
   const anchorFor = useCallback(
     (group: number): { x: number; y: number } => {
-      const ringRadius = 150 + Math.sqrt(graph.nodes.length) * 21
       const turn = (performance.now() / 1000 / ROTATION_SECONDS) * Math.PI * 2
       const angle = turn + (group / GROUP_COUNT) * Math.PI * 2
-      return { x: Math.cos(angle) * ringRadius, y: Math.sin(angle) * ringRadius }
+      return {
+        x: Math.cos(angle) * ringRadius * ringScale.x,
+        y: Math.sin(angle) * ringRadius * ringScale.y
+      }
     },
-    [graph.nodes.length]
+    [ringRadius, ringScale]
   )
 
   const palette = useMemo(
@@ -133,15 +164,13 @@ export function GraphPanel({ config, setConfig }: PanelProps<GraphConfig>): Reac
         height: Math.max(1, Math.floor(entry.contentRect.height))
       })
       if (refit) clearTimeout(refit)
-      if (!userAdjustedRef.current) {
-        refit = setTimeout(() => graphRef.current?.zoomToFit(400, 28), 250)
-      }
+      if (!userAdjustedRef.current) refit = setTimeout(() => frame(400), 250)
     })
     observer.observe(container)
 
     // Clusters migrate, so the mesh's bounding box grows and shrinks over time.
     const reframe = setInterval(() => {
-      if (!userAdjustedRef.current) graphRef.current?.zoomToFit(900, 28)
+      if (!userAdjustedRef.current) frame(900)
     }, REFRAME_MS)
 
     return () => {
@@ -151,7 +180,7 @@ export function GraphPanel({ config, setConfig }: PanelProps<GraphConfig>): Reac
       container.removeEventListener('wheel', markAdjusted)
       container.removeEventListener('mousedown', markAdjusted)
     }
-  }, [])
+  }, [frame])
 
   // Forces: repulsion and links come from d3, clustering is ours.
   useEffect(() => {
@@ -191,9 +220,9 @@ export function GraphPanel({ config, setConfig }: PanelProps<GraphConfig>): Reac
     instance.d3ReheatSimulation()
 
     // Let the layout spread before framing it, otherwise it fits a tight initial blob.
-    const timer = setTimeout(() => graphRef.current?.zoomToFit(700, 28), 1400)
+    const timer = setTimeout(() => frame(700), 1400)
     return () => clearTimeout(timer)
-  }, [graph, anchorFor, nodeRadius])
+  }, [graph, anchorFor, nodeRadius, frame])
 
   /**
    * The migration: with the mesh holding still, one node at a time is reassigned and

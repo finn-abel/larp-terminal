@@ -76,3 +76,47 @@
     animation: none;
   }
 }
+
+/*
+ * Optional CRT overlay (Appendix C): scanlines plus a very subtle flicker, kept low
+ * enough in opacity that it never costs readability.
+ */
+.app__crt {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    rgb(0 0 0 / 0.22) 0px,
+    rgb(0 0 0 / 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  animation: crt-flicker 5.5s steps(60) infinite;
+}
+
+@keyframes crt-flicker {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  17% {
+    opacity: 0.82;
+  }
+  38% {
+    opacity: 0.66;
+  }
+  62% {
+    opacity: 0.8;
+  }
+  83% {
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app__crt {
+    animation: none;
+  }
+}

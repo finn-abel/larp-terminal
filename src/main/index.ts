@@ -2,6 +2,8 @@ import { join } from 'node:path'
 import { app, shell, BrowserWindow } from 'electron'
 import { broadcastMaximizeState, registerWindowControls } from './windowControls'
 import { registerDevShortcuts } from './devShortcuts'
+import { registerWorkspaceStore } from './workspaces'
+import { registerApplicationMenu } from './menu'
 
 const MIN_WIDTH = 1280
 const MIN_HEIGHT = 800
@@ -55,8 +57,10 @@ function createWindow(): BrowserWindow {
 
 void app.whenReady().then(() => {
   app.setAppUserModelId('com.larpterminal.app')
+  registerApplicationMenu()
 
   registerWindowControls()
+  registerWorkspaceStore()
   createWindow()
 
   app.on('activate', () => {

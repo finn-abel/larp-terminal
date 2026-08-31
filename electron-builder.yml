@@ -1,0 +1,45 @@
+appId: com.larpterminal.app
+productName: LARP Terminal
+copyright: MIT licensed. All market data is procedurally generated and fake.
+directories:
+  buildResources: build
+  output: release
+
+files:
+  - out/**
+  - package.json
+
+asar: true
+
+mac:
+  category: public.app-category.finance
+  target:
+    - target: dmg
+      arch: [arm64, x64]
+  icon: build/icon.png
+  darkModeSupport: true
+  # Unsigned local builds; set your identity to distribute.
+  identity: null
+
+dmg:
+  title: LARP Terminal ${version}
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: build/icon.png
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  artifactName: ${productName}-${version}-setup.${ext}
+
+linux:
+  target:
+    - target: AppImage
+      arch: [x64]
+  category: Office
+  icon: build/icon.png
+  artifactName: ${productName}-${version}.${ext}

@@ -1,7 +1,7 @@
 {
   "name": "larp-terminal",
   "version": "0.1.0",
-  "description": "A satirical fake financial terminal. All data is procedurally generated and fake.",
+  "description": "A satirical desktop \"financial terminal\". Every number on screen is procedurally generated and fake.",
   "main": "./out/main/index.js",
   "author": "Finn Abel",
   "license": "MIT",
@@ -15,7 +15,12 @@
     "test:watch": "vitest",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
-    "typecheck": "npm run typecheck:node && npm run typecheck:web"
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "dist": "npm run build && electron-builder",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:linux": "npm run build && electron-builder --linux",
+    "pack": "npm run build && electron-builder --dir"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",

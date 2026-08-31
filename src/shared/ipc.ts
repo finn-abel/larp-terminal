@@ -10,6 +10,38 @@ export const WindowChannel = {
 
 export type WindowChannelName = (typeof WindowChannel)[keyof typeof WindowChannel]
 
+export const WorkspaceChannel = {
+  read: 'workspace:read',
+  write: 'workspace:write',
+  switch: 'workspace:switch',
+  remove: 'workspace:remove'
+} as const
+
+/** Serialized dockview layout. The main process treats it as opaque JSON. */
+export type WorkspaceLayout = unknown
+
+export interface WorkspaceFile {
+  readonly version: number
+  readonly active: string
+  readonly workspaces: Readonly<Record<string, WorkspaceLayout>>
+}
+
+export interface WorkspaceSnapshot {
+  readonly active: string
+  readonly names: readonly string[]
+  readonly layout: WorkspaceLayout | null
+}
+
+export interface LarpWorkspaceApi {
+  /** Reads the active workspace and the list of saved names. */
+  read: () => Promise<WorkspaceSnapshot>
+  /** Saves a layout under a name, making it active. */
+  write: (name: string, layout: WorkspaceLayout) => Promise<WorkspaceSnapshot>
+  /** Switches to a saved workspace. */
+  switch: (name: string) => Promise<WorkspaceSnapshot>
+  remove: (name: string) => Promise<WorkspaceSnapshot>
+}
+
 /** The API surfaced on `window.larp` in the renderer. */
 export interface LarpWindowApi {
   minimize: () => void
@@ -37,4 +69,5 @@ export type Platform =
 export interface LarpApi {
   platform: Platform
   window: LarpWindowApi
+  workspace: LarpWorkspaceApi
 }
