@@ -1,6 +1,7 @@
 .app {
+  position: relative;
   display: grid;
-  grid-template-rows: var(--titlebar-height) minmax(0, 1fr);
+  grid-template-rows: var(--titlebar-height) minmax(0, 1fr) auto;
   height: 100%;
 }
 
@@ -15,4 +16,63 @@
     linear-gradient(90deg, var(--color-line) 1px, transparent 1px) 0 0 / 96px 96px,
     linear-gradient(180deg, var(--color-line) 1px, transparent 1px) 0 0 / 96px 96px,
     var(--color-void);
+}
+
+/*
+ * Regime flash: a full-window wash on every transition, inert until `data-flash` is set
+ * on the shell. It sits above the panels but never takes pointer events.
+ */
+.app__flash {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app[data-flash] .app__flash {
+  animation: regime-flash 1.6s var(--ease-out-expo);
+}
+
+.app[data-flash='rally'] .app__flash {
+  box-shadow: inset 0 0 0 2px var(--color-up);
+  background: radial-gradient(ellipse at center, transparent 45%, rgb(46 232 138 / 0.16));
+}
+
+.app[data-flash='crash'] .app__flash {
+  box-shadow: inset 0 0 0 2px var(--color-down);
+  background: radial-gradient(ellipse at center, transparent 40%, rgb(255 91 85 / 0.22));
+}
+
+.app[data-flash='high_vol'] .app__flash {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+  background: radial-gradient(ellipse at center, transparent 45%, rgb(255 174 0 / 0.16));
+}
+
+.app[data-flash='calm'] .app__flash {
+  box-shadow: inset 0 0 0 1px var(--color-line-strong);
+}
+
+@keyframes regime-flash {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0.35;
+  }
+  48% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app[data-flash] .app__flash {
+    animation: none;
+  }
 }

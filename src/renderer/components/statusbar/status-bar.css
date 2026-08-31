@@ -1,0 +1,106 @@
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  height: 22px;
+  padding: 0 var(--space-4);
+  background: linear-gradient(180deg, var(--color-surface), var(--color-surface-raised));
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.statusbar__group,
+.statusbar__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.statusbar__label {
+  color: var(--color-text-faint);
+}
+
+.statusbar__value {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-dim);
+}
+
+.statusbar__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-live);
+  box-shadow: 0 0 6px var(--color-live);
+  animation: statusbar-pulse 2.4s steps(1, end) infinite;
+}
+
+@keyframes statusbar-pulse {
+  0%,
+  72% {
+    opacity: 1;
+  }
+  73%,
+  100% {
+    opacity: 0.2;
+  }
+}
+
+/* Signal strength: filled bars climb from left to right. */
+.statusbar__bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 8px;
+}
+
+.statusbar__bars i {
+  width: 2px;
+  background: var(--color-line-strong);
+  transition: background-color var(--duration-normal) var(--ease-out-expo);
+}
+
+.statusbar__bars i:nth-child(1) {
+  height: 25%;
+}
+.statusbar__bars i:nth-child(2) {
+  height: 50%;
+}
+.statusbar__bars i:nth-child(3) {
+  height: 75%;
+}
+.statusbar__bars i:nth-child(4) {
+  height: 100%;
+}
+
+.statusbar__bars i.is-on {
+  background: var(--color-live);
+}
+
+.statusbar__clocks {
+  display: inline-flex;
+  gap: var(--space-4);
+  margin-left: auto;
+}
+
+.statusbar__regime {
+  padding: 0 var(--space-2);
+  border: 1px solid currentColor;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-dim);
+}
+
+.statusbar__regime--rally {
+  color: var(--color-up);
+}
+
+.statusbar__regime--crash {
+  color: var(--color-down);
+}
+
+.statusbar__regime--high_vol {
+  color: var(--color-accent);
+}

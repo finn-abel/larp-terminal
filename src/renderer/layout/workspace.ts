@@ -42,6 +42,11 @@ export function clearWorkspace(): void {
   }
 }
 
+/** Resizes the group a panel lives in. Panels themselves carry no size. */
+export function setGroupHeight(api: DockviewApi, panelId: string, height: number): void {
+  api.getPanel(panelId)?.group.api.setSize({ height })
+}
+
 export function createPanelId(type: string): string {
   return `${type}-${Math.random().toString(36).slice(2, 8)}`
 }
@@ -54,6 +59,9 @@ export function addPanel(
     readonly config?: unknown
     readonly referencePanel?: string
     readonly direction?: 'right' | 'below' | 'left' | 'above'
+    /** Starting height of the panel's group, in pixels. */
+    readonly height?: number
+    readonly width?: number
   } = {}
 ): string | null {
   const definition = getPanelDefinition(type)
@@ -72,6 +80,8 @@ export function addPanel(
     component: type,
     title: panelTitle(type, config),
     params,
+    ...(options.height === undefined ? {} : { initialHeight: options.height }),
+    ...(options.width === undefined ? {} : { initialWidth: options.width }),
     ...(options.referencePanel
       ? {
           position: {
@@ -86,34 +96,47 @@ export function addPanel(
 }
 
 /**
- * The layout a fresh install opens with: the matrix on the left, the chart filling the
- * right, and quotes stacked beneath it — two of them tabbed together so the docking is
- * obvious immediately.
+ * The layout a fresh install opens with. Dense on purpose (design principle 2): the
+ * tape along the top, book and matrix down the left, chart and graph carrying the
+ * middle, alerts and console stacked on the right.
  */
 export function buildDefaultLayout(api: DockviewApi): void {
-  const matrix = addPanel(api, 'matrix')
+  const tape = addPanel(api, 'ticker')
+  if (!tape) return
+
+  const book = addPanel(api, 'bignumber', { referencePanel: tape, direction: 'below' })
+  if (!book) return
+
+  const matrix = addPanel(api, 'matrix', { referencePanel: book, direction: 'below' })
   if (!matrix) return
 
   const chart = addPanel(api, 'chart', {
     config: { symbolId: 'tesr', intervalSeconds: 2, style: 'candles' },
-    referencePanel: matrix,
+    referencePanel: book,
     direction: 'right'
   })
   if (!chart) return
 
-  const lower = addPanel(api, 'graph', {
-    referencePanel: chart,
-    direction: 'below'
-  })
-  if (!lower) return
+  const graph = addPanel(api, 'graph', { referencePanel: chart, direction: 'below' })
+  if (!graph) return
 
-  const quote = addPanel(api, 'quote', {
-    config: { symbolId: 'qvnx' },
-    referencePanel: lower,
-    direction: 'right'
-  })
-  if (!quote) return
+  const alerts = addPanel(api, 'alerts', { referencePanel: chart, direction: 'right' })
+  if (!alerts) return
+
+  const console = addPanel(api, 'console', { referencePanel: alerts, direction: 'below' })
+  if (!console) return
 
   // No direction: joins the same group as a tab.
-  addPanel(api, 'quote', { config: { symbolId: 'grvn' }, referencePanel: quote })
+  addPanel(api, 'heatmap', { referencePanel: graph })
+
+  // Sizing happens after every panel exists: dockview renormalises group sizes on each
+  // insert, so heights given at creation time do not survive the panels added after them.
+  // Order matters: a group can only grow into space its siblings have given up, so the
+  // matrix is shrunk first and the graph then claims what that released.
+  setGroupHeight(api, tape, 46)
+  setGroupHeight(api, matrix, 260)
+  setGroupHeight(api, graph, 320)
+
+  // The graph shares a group with the heatmap and should be the tab on top.
+  api.getPanel(graph)?.api.setActive()
 }

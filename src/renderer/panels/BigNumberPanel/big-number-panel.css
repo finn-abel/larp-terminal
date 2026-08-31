@@ -1,0 +1,116 @@
+.bignumber {
+  display: grid;
+  align-content: center;
+  container-type: size;
+  gap: var(--space-2);
+  height: 100%;
+  padding: var(--space-4);
+  container-type: inline-size;
+}
+
+.bignumber__label {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-faint);
+}
+
+.bignumber__value {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: clamp(26px, 11cqw, 76px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.bignumber__currency {
+  font-size: 0.34em;
+  color: var(--color-text-faint);
+  letter-spacing: var(--tracking-wide);
+}
+
+.bignumber__delta {
+  margin: 0;
+  font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.bignumber__delta span {
+  opacity: 0.8;
+}
+
+.bignumber__spark {
+  width: 100%;
+  height: clamp(38px, 14cqh, 120px);
+  margin-top: var(--space-3);
+  overflow: visible;
+}
+
+.bignumber__spark-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+}
+
+.bignumber__spark-fill {
+  fill: currentColor;
+  opacity: 0.1;
+  stroke: none;
+}
+
+.bignumber__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+}
+
+.bignumber__stats dt {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-faint);
+}
+
+.bignumber__stats dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.bignumber__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+}
+
+.bignumber__meta {
+  color: var(--color-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.bignumber__regime {
+  margin-left: auto;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid currentColor;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-dim);
+}
+
+.bignumber__regime--rally {
+  color: var(--color-up);
+}
+
+.bignumber__regime--crash {
+  color: var(--color-down);
+}
+
+.bignumber__regime--high_vol {
+  color: var(--color-accent);
+}

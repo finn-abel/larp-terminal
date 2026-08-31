@@ -1,0 +1,53 @@
+.ticker {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-height: 24px;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.ticker__track {
+  display: flex;
+  flex: none;
+  gap: var(--space-6);
+  padding-right: var(--space-6);
+  white-space: nowrap;
+  animation-name: ticker-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+/* The tape is duplicated, so a -50% translation lands exactly on the seam. */
+@keyframes ticker-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker__track {
+    animation: none;
+  }
+}
+
+.ticker__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker__symbol {
+  color: var(--color-accent);
+  letter-spacing: var(--tracking-wide);
+}
+
+.ticker__change {
+  font-size: var(--text-micro);
+}

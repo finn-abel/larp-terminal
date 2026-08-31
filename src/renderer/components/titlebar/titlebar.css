@@ -103,6 +103,10 @@
   color: var(--color-accent);
 }
 
+.status-chip__value--down {
+  color: var(--color-down);
+}
+
 .status-chip__value--up {
   color: var(--color-up);
 }

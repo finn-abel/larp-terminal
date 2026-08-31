@@ -1,0 +1,51 @@
+.alerts {
+  margin: 0;
+  padding: var(--space-2) 0;
+  list-style: none;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+}
+
+.alerts__idle {
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-faint);
+}
+
+.alerts__row {
+  display: flex;
+  gap: var(--space-3);
+  padding: 1px var(--space-3);
+  color: var(--color-text-dim);
+  white-space: nowrap;
+  border-left: 2px solid transparent;
+  /* New rows arrive at the top; the slide keeps the feed readable as it scrolls. */
+  animation: alert-enter 220ms var(--ease-out-expo);
+}
+
+@keyframes alert-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+.alerts__row--warn {
+  color: var(--color-accent);
+  border-left-color: var(--color-accent-dim);
+}
+
+.alerts__row--critical {
+  color: var(--color-down);
+  border-left-color: var(--color-down);
+  background: var(--color-down-tint);
+}
+
+.alerts__time {
+  color: var(--color-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.alerts__message {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

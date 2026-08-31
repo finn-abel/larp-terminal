@@ -3,6 +3,11 @@ import type { MatrixConfig } from '@renderer/panels/MatrixPanel/MatrixPanel'
 import type { QuoteConfig } from '@renderer/panels/QuotePanel/QuotePanel'
 import type { ChartConfig } from '@renderer/panels/ChartPanel/ChartPanel'
 import type { GraphConfig } from '@renderer/panels/GraphPanel/GraphPanel'
+import type { TickerConfig } from '@renderer/panels/TickerPanel/TickerPanel'
+import type { AlertsConfig } from '@renderer/panels/AlertsPanel/AlertsPanel'
+import type { BigNumberConfig } from '@renderer/panels/BigNumberPanel/BigNumberPanel'
+import type { HeatmapConfig } from '@renderer/panels/HeatmapPanel/HeatmapPanel'
+import type { ConsoleConfig } from '@renderer/panels/ConsolePanel/ConsolePanel'
 import { DEFAULT_SYMBOLS } from '@renderer/engine'
 
 export interface PanelProps<TConfig> {
@@ -51,6 +56,21 @@ const GraphPanel = lazy(async () => ({
 const QuotePanel = lazy(async () => ({
   default: (await import('@renderer/panels/QuotePanel/QuotePanel')).QuotePanel
 }))
+const TickerPanel = lazy(async () => ({
+  default: (await import('@renderer/panels/TickerPanel/TickerPanel')).TickerPanel
+}))
+const AlertsPanel = lazy(async () => ({
+  default: (await import('@renderer/panels/AlertsPanel/AlertsPanel')).AlertsPanel
+}))
+const BigNumberPanel = lazy(async () => ({
+  default: (await import('@renderer/panels/BigNumberPanel/BigNumberPanel')).BigNumberPanel
+}))
+const HeatmapPanel = lazy(async () => ({
+  default: (await import('@renderer/panels/HeatmapPanel/HeatmapPanel')).HeatmapPanel
+}))
+const ConsolePanel = lazy(async () => ({
+  default: (await import('@renderer/panels/ConsolePanel/ConsolePanel')).ConsolePanel
+}))
 
 export const PANEL_DEFINITIONS: readonly PanelDefinition<unknown>[] = [
   definePanel<MatrixConfig>({
@@ -73,6 +93,40 @@ export const PANEL_DEFINITIONS: readonly PanelDefinition<unknown>[] = [
     component: GraphPanel,
     defaultConfig: { nodeCount: 120, reassignSeconds: 2, glow: true, rings: false },
     describe: (config) => `${config.nodeCount}N`
+  }),
+  definePanel<BigNumberConfig>({
+    type: 'bignumber',
+    displayName: 'BOOK',
+    component: BigNumberPanel,
+    defaultConfig: { label: 'TOTAL BOOK VALUE', currency: 'USD' },
+    describe: (config) => config.currency
+  }),
+  definePanel<HeatmapConfig>({
+    type: 'heatmap',
+    displayName: 'HEATMAP',
+    component: HeatmapPanel,
+    defaultConfig: { scale: 4 },
+    describe: (config) => `±${config.scale}%`
+  }),
+  definePanel<AlertsConfig>({
+    type: 'alerts',
+    displayName: 'ALERTS',
+    component: AlertsPanel,
+    defaultConfig: { limit: 60, minSeverity: 'info' },
+    describe: (config) => config.minSeverity.toUpperCase()
+  }),
+  definePanel<ConsoleConfig>({
+    type: 'console',
+    displayName: 'CONSOLE',
+    component: ConsolePanel,
+    defaultConfig: { typeSpeed: 26, historyLimit: 60 }
+  }),
+  definePanel<TickerConfig>({
+    type: 'ticker',
+    displayName: 'TAPE',
+    component: TickerPanel,
+    defaultConfig: { scrollSeconds: 40 },
+    describe: (config) => `${config.scrollSeconds}S`
   }),
   definePanel<QuoteConfig>({
     type: 'quote',

@@ -1,0 +1,44 @@
+.console {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100%;
+  padding: var(--space-3);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+}
+
+.console__line {
+  margin: 0 0 1px;
+  color: var(--color-text-dim);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.console__line--out {
+  color: var(--color-text-faint);
+}
+
+.console__line--active {
+  color: var(--color-text);
+}
+
+.console__prompt {
+  color: var(--color-accent);
+}
+
+.console__cursor {
+  color: var(--color-accent);
+  animation: console-blink 1s steps(1, end) infinite;
+}
+
+@keyframes console-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}

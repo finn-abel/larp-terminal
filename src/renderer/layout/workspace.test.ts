@@ -17,15 +17,30 @@ function stubStorage(): Map<string, string> {
 }
 
 /** Minimal DockviewApi stand-in that records what the workspace asked it to add. */
-function stubApi(): { api: DockviewApi; added: Array<Record<string, unknown>> } {
+function stubApi(): {
+  api: DockviewApi
+  added: Array<Record<string, unknown>>
+  sized: Array<{ id: string; height?: number }>
+  activated: string[]
+} {
   const added: Array<Record<string, unknown>> = []
+  const sized: Array<{ id: string; height?: number }> = []
+  const activated: string[] = []
+
   const api = {
     addPanel: (options: Record<string, unknown>) => {
       added.push(options)
       return { id: options.id }
-    }
+    },
+    getPanel: (id: string) => ({
+      api: { setActive: () => activated.push(id) },
+      group: {
+        api: { setSize: (size: { height?: number }) => sized.push({ id, height: size.height }) }
+      }
+    })
   } as unknown as DockviewApi
-  return { api, added }
+
+  return { api, added, sized, activated }
 }
 
 beforeEach(() => {
@@ -128,17 +143,52 @@ describe('addPanel', () => {
 })
 
 describe('default layout', () => {
-  it('opens a matrix, a chart, a graph and two quotes, one of them tabbed', () => {
+  it('opens the full terminal, with the heatmap tabbed behind the graph', () => {
     const { api, added } = stubApi()
     buildDefaultLayout(api)
 
     expect(added.map((panel) => panel.component)).toEqual([
+      'ticker',
+      'bignumber',
       'matrix',
       'chart',
       'graph',
-      'quote',
-      'quote'
+      'alerts',
+      'console',
+      'heatmap'
     ])
-    expect(added[4]!.position).toEqual({ referencePanel: added[3]!.id })
+    expect(added.at(-1)!.position).toEqual({ referencePanel: added[4]!.id })
+  })
+
+  it('sizes the tape as a strip and gives the graph room, after every panel exists', () => {
+    const { api, added, sized } = stubApi()
+    buildDefaultLayout(api)
+
+    expect(sized).toEqual([
+      { id: added[0]!.id, height: 46 },
+      { id: added[2]!.id, height: 260 },
+      { id: added[4]!.id, height: 320 }
+    ])
+  })
+
+  it('leaves the graph on top of its tab group', () => {
+    const { api, added, activated } = stubApi()
+    buildDefaultLayout(api)
+
+    expect(activated).toEqual([added[4]!.id])
+  })
+
+  it('passes a height through as initialHeight', () => {
+    const { api, added } = stubApi()
+    addPanel(api, 'quote', { height: 120 })
+
+    expect(added[0]!.initialHeight).toBe(120)
+  })
+
+  it('omits sizing when none is asked for', () => {
+    const { api, added } = stubApi()
+    addPanel(api, 'quote')
+
+    expect(added[0]).not.toHaveProperty('initialHeight')
   })
 })

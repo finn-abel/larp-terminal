@@ -1,0 +1,53 @@
+.heatmap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+  gap: 1px;
+  padding: 1px;
+  height: 100%;
+  background: var(--color-line);
+}
+
+.heatmap__cell {
+  display: grid;
+  align-content: center;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wide);
+  /* --heat is set per cell from the sector's move; the tint follows it. */
+  box-shadow: inset 0 0 0 100px transparent;
+  transition: box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.heatmap__cell--up {
+  box-shadow: inset 0 0 0 100px rgb(46 232 138 / calc(var(--heat, 0) * 0.3));
+}
+
+.heatmap__cell--down {
+  box-shadow: inset 0 0 0 100px rgb(255 91 85 / calc(var(--heat, 0) * 0.3));
+}
+
+.heatmap__sector {
+  color: var(--color-text-dim);
+  letter-spacing: var(--tracking-label);
+}
+
+.heatmap__value {
+  font-size: var(--text-lg);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.heatmap__cell--up .heatmap__value {
+  color: var(--color-up);
+}
+
+.heatmap__cell--down .heatmap__value {
+  color: var(--color-down);
+}
+
+.heatmap__breadth {
+  color: var(--color-text-faint);
+  font-variant-numeric: tabular-nums;
+}
